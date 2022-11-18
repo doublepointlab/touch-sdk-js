@@ -1,0 +1,19 @@
+{
+  "name": "touch-sdk",
+  "version": "0.1.0",
+  "description": "Port 6 Touch SDK",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"No tests specified\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/port6io/touch-sdk-js.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/port6io/touch-sdk-js/issues"
+  },
+  "homepage": "https://github.com/port6io/touch-sdk-js#readme"
+}
