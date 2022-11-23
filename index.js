@@ -34,7 +34,7 @@ const characteristicUuids = {
 
 // struct.unpack
 const bytesToFloatArray = bytes => {
-    result = []
+    const result = []
     for (let i = 0; i < bytes.byteLength; i += 4) {
         result.push(bytes.getFloat32(i))
     }
