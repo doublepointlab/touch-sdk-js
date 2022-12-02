@@ -1,9 +1,13 @@
+//import { load } from 'protobufjs'
+import { Update } from './watch_output.js'
+
 const serviceUuids = {
     SENSOR: '4b574af0-72d7-45d2-a1bb-23cd0ec20c57',
     FEEDBACK: '42926760-277c-4298-acfe-226b8d1c8c88',
     INTERACTION: '008e74d0-7bb3-4ac5-8baf-e5e372cced76',
     DISCONNECT: 'e23625a0-a6b6-4aa5-a1ad-b9c5d9158363',
     DATAFRAME: '4c574af0-72d7-45d2-a1bb-23cd0ec20c57',
+    PROTOBUF: 'f9d60370-5325-4c64-b874-a68c7c555bad'
 }
 
 const characteristicUuids = {
@@ -26,7 +30,11 @@ const characteristicUuids = {
     DISCONNECT: 'e23625a1-a6b6-4aa5-a1ad-b9c5d9158363',
 
     // Dataframe Service
-    DATAFRAME: '4c574af1-72d7-45d2-a1bb-23cd0ec20c57'
+    DATAFRAME: '4c574af1-72d7-45d2-a1bb-23cd0ec20c57',
+
+    PROTOBUF_OUTPUT: 'f9d60371-5325-4c64-b874-a68c7c555bad',
+    PROTOBUF_INPUT: 'f9d60372-5325-4c64-b874-a68c7c555bad',
+    PROTOBUF_INFO: 'f9d60373-5325-4c64-b874-a68c7c555bad'
 
 }
 
@@ -61,59 +69,62 @@ class Watch extends EventTarget {
     }
 
     _subscribeToNotifications() {
-        this.linkNotifications(serviceUuids.SENSOR, characteristicUuids.ACC, 'accelerationchanged', bytesToFloatArray)
-        this.linkNotifications(serviceUuids.SENSOR, characteristicUuids.GYRO, 'angularvelocitychanged', bytesToFloatArray)
-        this.linkNotifications(serviceUuids.SENSOR, characteristicUuids.GRAV, 'gravityvectorchanged', bytesToFloatArray)
-        this.linkNotifications(serviceUuids.SENSOR, characteristicUuids.QUAT, 'orientationchanged', bytesToFloatArray)
 
-        this.linkNotifications(serviceUuids.DATAFRAME, characteristicUuids.DATAFRAME,
-            'accelerationchanged', data => { return bytesToFloatArray(data).slice(0, 3) })
+        //this.linkNotifications(serviceUuids.SENSOR, characteristicUuids.ACC, 'accelerationchanged', bytesToFloatArray)
+        //this.linkNotifications(serviceUuids.SENSOR, characteristicUuids.GYRO, 'angularvelocitychanged', bytesToFloatArray)
+        //this.linkNotifications(serviceUuids.SENSOR, characteristicUuids.GRAV, 'gravityvectorchanged', bytesToFloatArray)
+        //this.linkNotifications(serviceUuids.SENSOR, characteristicUuids.QUAT, 'orientationchanged', bytesToFloatArray)
 
-        this.linkNotifications(serviceUuids.DATAFRAME, characteristicUuids.DATAFRAME,
-            'gravityvectorchanged', data => { return bytesToFloatArray(data).slice(3, 6) })
+        //this.linkNotifications(serviceUuids.DATAFRAME, characteristicUuids.DATAFRAME,
+        //    'accelerationchanged', data => { return bytesToFloatArray(data).slice(0, 3) })
 
-        this.linkNotifications(serviceUuids.DATAFRAME, characteristicUuids.DATAFRAME,
-            'angularvelocitychanged', data => { return bytesToFloatArray(data).slice(6, 9) })
+        //this.linkNotifications(serviceUuids.DATAFRAME, characteristicUuids.DATAFRAME,
+        //    'gravityvectorchanged', data => { return bytesToFloatArray(data).slice(3, 6) })
 
-        this.linkNotifications(serviceUuids.DATAFRAME, characteristicUuids.DATAFRAME,
-            'orientationchanged', data => { return bytesToFloatArray(data).slice(9, 13) })
+        //this.linkNotifications(serviceUuids.DATAFRAME, characteristicUuids.DATAFRAME,
+        //    'angularvelocitychanged', data => { return bytesToFloatArray(data).slice(6, 9) })
 
-        this.linkNotifications(
-            serviceUuids.INTERACTION,
-            characteristicUuids.GESTURE,
-            data => {
-                const type = data.getUint8(0)
-                if (type === 1) return 'tap'
-                if (type === 2) return 'clench'
-            },
-            data => null
-        )
+        //this.linkNotifications(serviceUuids.DATAFRAME, characteristicUuids.DATAFRAME,
+        //    'orientationchanged', data => { return bytesToFloatArray(data).slice(9, 13) })
 
-        this.linkNotifications(
-            serviceUuids.INTERACTION,
-            characteristicUuids.TOUCHSCREEN,
-            data => {
-                const type = data.getUint8(0)
-                if (type === 0) return 'touchstart'
-                if (type === 1) return 'touchend'
-                if (type === 2) return 'touchmove'
-            },
-            data => ({
-                x: data.getFloat32(1),
-                y: data.getFloat32(5)
-            })
-        )
+        this.linkProtobufNotifications(serviceUuids.PROTOBUF, characteristicUuids.PROTOBUF_OUTPUT)
 
-        this.linkNotifications(
-            serviceUuids.INTERACTION,
-            characteristicUuids.PHYSICAL,
-            data => {
-                const type = data.getUint8(0)
-                if (type === 0) return 'rotary'
-                if (type === 1) return 'button'
-            },
-            data => data.getUint8(1)
-        )
+        //this.linkNotifications(
+        //    serviceUuids.INTERACTION,
+        //    characteristicUuids.GESTURE,
+        //    data => {
+        //        const type = data.getUint8(0)
+        //        if (type === 1) return 'tap'
+        //        if (type === 2) return 'clench'
+        //    },
+        //    data => null
+        //)
+
+        //this.linkNotifications(
+        //    serviceUuids.INTERACTION,
+        //    characteristicUuids.TOUCHSCREEN,
+        //    data => {
+        //        const type = data.getUint8(0)
+        //        if (type === 0) return 'touchstart'
+        //        if (type === 1) return 'touchend'
+        //        if (type === 2) return 'touchmove'
+        //    },
+        //    data => ({
+        //        x: data.getFloat32(1),
+        //        y: data.getFloat32(5)
+        //    })
+        //)
+
+        //this.linkNotifications(
+        //    serviceUuids.INTERACTION,
+        //    characteristicUuids.PHYSICAL,
+        //    data => {
+        //        const type = data.getUint8(0)
+        //        if (type === 0) return 'rotary'
+        //        if (type === 1) return 'button'
+        //    },
+        //    data => data.getUint8(1)
+        //)
 
         // This doesn't do anything with the current watch app, because it will die before having a chance to
         // send the disconnect signal
@@ -126,6 +137,27 @@ class Watch extends EventTarget {
                 })
             })
         })
+    }
+
+    linkProtobufNotifications = (serviceUUID, characteristicUUID) => {
+
+
+            this.gattServer.getPrimaryService(serviceUUID).then(service => {
+                console.log(service)
+                service.getCharacteristic(characteristicUUID).then(characteristic => {
+                console.log(characteristic)
+                    characteristic.addEventListener('characteristicvaluechanged', gattEvent => {
+                        const dataView = gattEvent.target.value
+                        const uints = new Uint8Array(dataView.buffer)
+                        const messageObject = Update.decode(uints)
+                        console.log(messageObject)
+                    })
+                    characteristic.startNotifications()
+                })
+            })
+
+
+
     }
 
     linkNotifications = (serviceUUID, characteristicUUID, eventNameGenerator, unpacker) => {
@@ -179,12 +211,13 @@ class Watch extends EventTarget {
 
     get device() { return this._device }
     get gattServer() { return this._gattServer }
+
 }
 
 
 
 export const getWatch = async () => {
-    if (!navigator.bluetooth) {    
+    if (!navigator.bluetooth) {
         let errorMessage
         if (navigator.userAgent.indexOf("Chrome") != -1) {
             // Browser probably supports Web Bluetooth, but it is not enabled.
@@ -205,7 +238,8 @@ export const getWatch = async () => {
         serviceUuids.SENSOR,
         serviceUuids.DATAFRAME,
         serviceUuids.FEEDBACK,
-        serviceUuids.DISCONNECT
+        serviceUuids.DISCONNECT,
+        serviceUuids.PROTOBUF
     ]
 
     return navigator.bluetooth.requestDevice({ filters, optionalServices })
