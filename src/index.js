@@ -2,54 +2,15 @@ import { Update } from './watch_output.js'
 import { InputUpdate, HapticEvent } from './watch_input.js'
 
 const serviceUuids = {
-    //SENSOR: '4b574af0-72d7-45d2-a1bb-23cd0ec20c57',
-    //FEEDBACK: '42926760-277c-4298-acfe-226b8d1c8c88',
     INTERACTION: '008e74d0-7bb3-4ac5-8baf-e5e372cced76',
-    //DISCONNECT: 'e23625a0-a6b6-4aa5-a1ad-b9c5d9158363',
-    //DATAFRAME: '4c574af0-72d7-45d2-a1bb-23cd0ec20c57',
     PROTOBUF: 'f9d60370-5325-4c64-b874-a68c7c555bad'
 }
 
 const characteristicUuids = {
-
-    // Sensor Service
-    //GYRO: '4b574af1-72d7-45d2-a1bb-23cd0ec20c57',
-    //ACC: '4b574af2-72d7-45d2-a1bb-23cd0ec20c57',
-    //GRAV: '4b574af3-72d7-45d2-a1bb-23cd0ec20c57',
-    //QUAT: '4b574af4-72d7-45d2-a1bb-23cd0ec20c57',
-
-    // Feedback Service
-    //HAPTICS: '42926761-277c-4298-acfe-226b8d1c8c88',
-
-    // Interaction Service
-    //GESTURE: '008e74d1-7bb3-4ac5-8baf-e5e372cced76',
-    //TOUCHSCREEN: '008e74d2-7bb3-4ac5-8baf-e5e372cced76',
-    //PHYSICAL: '008e74d3-7bb3-4ac5-8baf-e5e372cced76', // rotary & button
-
-    // Disconnect Service
-    //DISCONNECT: 'e23625a1-a6b6-4aa5-a1ad-b9c5d9158363',
-
-    // Dataframe Service
-    //DATAFRAME: '4c574af1-72d7-45d2-a1bb-23cd0ec20c57',
-
     PROTOBUF_OUTPUT: 'f9d60371-5325-4c64-b874-a68c7c555bad',
     PROTOBUF_INPUT: 'f9d60372-5325-4c64-b874-a68c7c555bad',
     PROTOBUF_INFO: 'f9d60373-5325-4c64-b874-a68c7c555bad'
-
 }
-
-
-
-// struct.unpack
-const bytesToFloatArray = bytes => {
-    const result = []
-    for (let i = 0; i < bytes.byteLength; i += 4) {
-        result.push(bytes.getFloat32(i))
-    }
-    return result
-}
-
-
 
 class Watch extends EventTarget {
     constructor(device) {
@@ -69,30 +30,8 @@ class Watch extends EventTarget {
     }
 
     _subscribeToNotifications() {
-
-
-        this.linkProtobufNotifications(serviceUuids.PROTOBUF, characteristicUuids.PROTOBUF_OUTPUT)
-
-
-        // This doesn't do anything with the current watch app, because it will die before having a chance to
-        // send the disconnect signal
-        //this.gattServer.getPrimaryService(serviceUuids.DISCONNECT).then(service => {
-        //    service.getCharacteristic(characteristicUuids.DISCONNECT).then(characteristic => {
-        //        characteristic.addEventListener('characteristicvaluechanged', gattEvent => {
-        //            if (gattEvent.target.value.getUint8(0) === 0) {
-        //                this.gattServer.disconnect()
-        //            }
-        //        })
-        //    })
-        //})
-    }
-
-    linkProtobufNotifications = (serviceUUID, characteristicUUID) => {
-
         this.gattServer.getPrimaryService(serviceUUID).then(service => {
-            console.log(service)
             service.getCharacteristic(characteristicUUID).then(characteristic => {
-            console.log(characteristic)
                 characteristic.addEventListener('characteristicvaluechanged', gattEvent => {
                     const dataView = gattEvent.target.value
                     const uints = new Uint8Array(dataView.buffer)
@@ -104,7 +43,6 @@ class Watch extends EventTarget {
                 characteristic.startNotifications()
             })
         })
-
     }
 
     dispatchProtobufEvents = (message) => {
@@ -139,8 +77,6 @@ class Watch extends EventTarget {
 
         if (message.sensorFrames.length > 0) {
             const frame = message.sensorFrames.slice(-1)[0]
-
-            //this.dispatchEvent(new CustomEvent('sensorschanged', {detail: frame.acc}))
 
             this.dispatchEvent(new CustomEvent('accelerationchanged', {detail: frame.acc}))
             this.dispatchEvent(new CustomEvent('gravityvectorchanged', {detail: frame.grav}))
