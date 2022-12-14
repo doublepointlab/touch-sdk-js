@@ -1,36 +1,35 @@
-//import { load } from 'protobufjs'
 import { Update } from './watch_output.js'
 
 const serviceUuids = {
-    SENSOR: '4b574af0-72d7-45d2-a1bb-23cd0ec20c57',
+    //SENSOR: '4b574af0-72d7-45d2-a1bb-23cd0ec20c57',
     FEEDBACK: '42926760-277c-4298-acfe-226b8d1c8c88',
     INTERACTION: '008e74d0-7bb3-4ac5-8baf-e5e372cced76',
-    DISCONNECT: 'e23625a0-a6b6-4aa5-a1ad-b9c5d9158363',
-    DATAFRAME: '4c574af0-72d7-45d2-a1bb-23cd0ec20c57',
+    //DISCONNECT: 'e23625a0-a6b6-4aa5-a1ad-b9c5d9158363',
+    //DATAFRAME: '4c574af0-72d7-45d2-a1bb-23cd0ec20c57',
     PROTOBUF: 'f9d60370-5325-4c64-b874-a68c7c555bad'
 }
 
 const characteristicUuids = {
 
     // Sensor Service
-    GYRO: '4b574af1-72d7-45d2-a1bb-23cd0ec20c57',
-    ACC: '4b574af2-72d7-45d2-a1bb-23cd0ec20c57',
-    GRAV: '4b574af3-72d7-45d2-a1bb-23cd0ec20c57',
-    QUAT: '4b574af4-72d7-45d2-a1bb-23cd0ec20c57',
+    //GYRO: '4b574af1-72d7-45d2-a1bb-23cd0ec20c57',
+    //ACC: '4b574af2-72d7-45d2-a1bb-23cd0ec20c57',
+    //GRAV: '4b574af3-72d7-45d2-a1bb-23cd0ec20c57',
+    //QUAT: '4b574af4-72d7-45d2-a1bb-23cd0ec20c57',
 
     // Feedback Service
     HAPTICS: '42926761-277c-4298-acfe-226b8d1c8c88',
 
     // Interaction Service
-    GESTURE: '008e74d1-7bb3-4ac5-8baf-e5e372cced76',
-    TOUCHSCREEN: '008e74d2-7bb3-4ac5-8baf-e5e372cced76',
-    PHYSICAL: '008e74d3-7bb3-4ac5-8baf-e5e372cced76', // rotary & button
+    //GESTURE: '008e74d1-7bb3-4ac5-8baf-e5e372cced76',
+    //TOUCHSCREEN: '008e74d2-7bb3-4ac5-8baf-e5e372cced76',
+    //PHYSICAL: '008e74d3-7bb3-4ac5-8baf-e5e372cced76', // rotary & button
 
-    // Disconnect Service
-    DISCONNECT: 'e23625a1-a6b6-4aa5-a1ad-b9c5d9158363',
+    //// Disconnect Service
+    //DISCONNECT: 'e23625a1-a6b6-4aa5-a1ad-b9c5d9158363',
 
-    // Dataframe Service
-    DATAFRAME: '4c574af1-72d7-45d2-a1bb-23cd0ec20c57',
+    //// Dataframe Service
+    //DATAFRAME: '4c574af1-72d7-45d2-a1bb-23cd0ec20c57',
 
     PROTOBUF_OUTPUT: 'f9d60371-5325-4c64-b874-a68c7c555bad',
     PROTOBUF_INPUT: 'f9d60372-5325-4c64-b874-a68c7c555bad',
@@ -70,124 +69,84 @@ class Watch extends EventTarget {
 
     _subscribeToNotifications() {
 
-        //this.linkNotifications(serviceUuids.SENSOR, characteristicUuids.ACC, 'accelerationchanged', bytesToFloatArray)
-        //this.linkNotifications(serviceUuids.SENSOR, characteristicUuids.GYRO, 'angularvelocitychanged', bytesToFloatArray)
-        //this.linkNotifications(serviceUuids.SENSOR, characteristicUuids.GRAV, 'gravityvectorchanged', bytesToFloatArray)
-        //this.linkNotifications(serviceUuids.SENSOR, characteristicUuids.QUAT, 'orientationchanged', bytesToFloatArray)
-
-        //this.linkNotifications(serviceUuids.DATAFRAME, characteristicUuids.DATAFRAME,
-        //    'accelerationchanged', data => { return bytesToFloatArray(data).slice(0, 3) })
-
-        //this.linkNotifications(serviceUuids.DATAFRAME, characteristicUuids.DATAFRAME,
-        //    'gravityvectorchanged', data => { return bytesToFloatArray(data).slice(3, 6) })
-
-        //this.linkNotifications(serviceUuids.DATAFRAME, characteristicUuids.DATAFRAME,
-        //    'angularvelocitychanged', data => { return bytesToFloatArray(data).slice(6, 9) })
-
-        //this.linkNotifications(serviceUuids.DATAFRAME, characteristicUuids.DATAFRAME,
-        //    'orientationchanged', data => { return bytesToFloatArray(data).slice(9, 13) })
 
         this.linkProtobufNotifications(serviceUuids.PROTOBUF, characteristicUuids.PROTOBUF_OUTPUT)
 
-        //this.linkNotifications(
-        //    serviceUuids.INTERACTION,
-        //    characteristicUuids.GESTURE,
-        //    data => {
-        //        const type = data.getUint8(0)
-        //        if (type === 1) return 'tap'
-        //        if (type === 2) return 'clench'
-        //    },
-        //    data => null
-        //)
-
-        //this.linkNotifications(
-        //    serviceUuids.INTERACTION,
-        //    characteristicUuids.TOUCHSCREEN,
-        //    data => {
-        //        const type = data.getUint8(0)
-        //        if (type === 0) return 'touchstart'
-        //        if (type === 1) return 'touchend'
-        //        if (type === 2) return 'touchmove'
-        //    },
-        //    data => ({
-        //        x: data.getFloat32(1),
-        //        y: data.getFloat32(5)
-        //    })
-        //)
-
-        //this.linkNotifications(
-        //    serviceUuids.INTERACTION,
-        //    characteristicUuids.PHYSICAL,
-        //    data => {
-        //        const type = data.getUint8(0)
-        //        if (type === 0) return 'rotary'
-        //        if (type === 1) return 'button'
-        //    },
-        //    data => data.getUint8(1)
-        //)
 
         // This doesn't do anything with the current watch app, because it will die before having a chance to
         // send the disconnect signal
-        this.gattServer.getPrimaryService(serviceUuids.DISCONNECT).then(service => {
-            service.getCharacteristic(characteristicUuids.DISCONNECT).then(characteristic => {
-                characteristic.addEventListener('characteristicvaluechanged', gattEvent => {
-                    if (gattEvent.target.value.getUint8(0) === 0) {
-                        this.gattServer.disconnect()
-                    }
-                })
-            })
-        })
+        //this.gattServer.getPrimaryService(serviceUuids.DISCONNECT).then(service => {
+        //    service.getCharacteristic(characteristicUuids.DISCONNECT).then(characteristic => {
+        //        characteristic.addEventListener('characteristicvaluechanged', gattEvent => {
+        //            if (gattEvent.target.value.getUint8(0) === 0) {
+        //                this.gattServer.disconnect()
+        //            }
+        //        })
+        //    })
+        //})
     }
 
     linkProtobufNotifications = (serviceUUID, characteristicUUID) => {
 
-
-            this.gattServer.getPrimaryService(serviceUUID).then(service => {
-                console.log(service)
-                service.getCharacteristic(characteristicUUID).then(characteristic => {
-                console.log(characteristic)
-                    characteristic.addEventListener('characteristicvaluechanged', gattEvent => {
-                        const dataView = gattEvent.target.value
-                        const uints = new Uint8Array(dataView.buffer)
-                        const messageObject = Update.decode(uints)
-                        console.log(messageObject)
-                    })
-                    characteristic.startNotifications()
-                })
-            })
-
-
-
-    }
-
-    linkNotifications = (serviceUUID, characteristicUUID, eventNameGenerator, unpacker) => {
         this.gattServer.getPrimaryService(serviceUUID).then(service => {
+            console.log(service)
             service.getCharacteristic(characteristicUUID).then(characteristic => {
+            console.log(characteristic)
                 characteristic.addEventListener('characteristicvaluechanged', gattEvent => {
+                    const dataView = gattEvent.target.value
+                    const uints = new Uint8Array(dataView.buffer)
+                    const messageObject = Update.decode(uints)
 
-                    // Some characteristic updates will be dispatched under different event names
-                    // depending on the payload (e.g. type value) -> eventNameGenerator is a function.
-                    //
-                    // Other characterstic updates have only one event name -> eventNameGenerator is a string.
-                    let eventName = eventNameGenerator
+                    this.dispatchProtobufEvents(messageObject)
 
-                    if (typeof eventNameGenerator === 'function') {
-                        eventName = eventNameGenerator(gattEvent.target.value)
-
-                        if (!eventName) {
-                            // If the generator returns a falsy value, no events should be dispatched
-                            return
-                        }
-                    }
-
-                    const event = new CustomEvent(eventName, {
-                        detail: unpacker(gattEvent.target.value)
-                    })
-                    this.dispatchEvent(event)
                 })
                 characteristic.startNotifications()
             })
-        }).catch(error => { console.log(error.message) })
+        })
+
+    }
+
+    dispatchProtobufEvents = (message) => {
+        for (const gesture of message.gestures) {
+            if (gesture.type == 1) {
+                this.dispatchEvent(new CustomEvent('tap'))
+            }
+        }
+
+        for (const rotaryEvent of message.rotaryEvents) {
+            this.dispatchEvent(new CustomEvent('rotary', {detail: rotaryEvent.step}))
+        }
+
+        for (const touchEvent of message.touchEvents) {
+            const type = touchEvent.type
+
+            const eventName = (() => {
+                if (type === 1) return 'touchstart'
+                if (type === 2) return 'touchend'
+                if (type === 3) return 'touchmove'
+                if (type === 4) return 'touchcancel'
+                else return ''
+            })()
+
+            if (eventName != '')
+                this.dispatchEvent(new CustomEvent(eventName, {detail: touchEvent.coords}))
+        }
+
+        for (const buttonEvent of message.buttonEvents) {
+            this.dispatchEvent(new CustomEvent('button', {detail: buttonEvent.id}))
+        }
+
+        if (message.sensorFrames.length > 0) {
+            const frame = message.sensorFrames.slice(-1)[0]
+
+            //this.dispatchEvent(new CustomEvent('sensorschanged', {detail: frame.acc}))
+
+            this.dispatchEvent(new CustomEvent('accelerationchanged', {detail: frame.acc}))
+            this.dispatchEvent(new CustomEvent('gravityvectorchanged', {detail: frame.grav}))
+            this.dispatchEvent(new CustomEvent('angularvelocitychanged', {detail: frame.gyro}))
+            this.dispatchEvent(new CustomEvent('orientationchanged', {detail: frame.quat}))
+        }
+
     }
 
     triggerHaptics(intensity, length) {
