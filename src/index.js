@@ -1,8 +1,9 @@
 import { Update } from './watch_output.js'
+import { InputUpdate, HapticEvent } from './watch_input.js'
 
 const serviceUuids = {
     //SENSOR: '4b574af0-72d7-45d2-a1bb-23cd0ec20c57',
-    FEEDBACK: '42926760-277c-4298-acfe-226b8d1c8c88',
+    //FEEDBACK: '42926760-277c-4298-acfe-226b8d1c8c88',
     INTERACTION: '008e74d0-7bb3-4ac5-8baf-e5e372cced76',
     //DISCONNECT: 'e23625a0-a6b6-4aa5-a1ad-b9c5d9158363',
     //DATAFRAME: '4c574af0-72d7-45d2-a1bb-23cd0ec20c57',
@@ -18,17 +19,17 @@ const characteristicUuids = {
     //QUAT: '4b574af4-72d7-45d2-a1bb-23cd0ec20c57',
 
     // Feedback Service
-    HAPTICS: '42926761-277c-4298-acfe-226b8d1c8c88',
+    //HAPTICS: '42926761-277c-4298-acfe-226b8d1c8c88',
 
     // Interaction Service
     //GESTURE: '008e74d1-7bb3-4ac5-8baf-e5e372cced76',
     //TOUCHSCREEN: '008e74d2-7bb3-4ac5-8baf-e5e372cced76',
     //PHYSICAL: '008e74d3-7bb3-4ac5-8baf-e5e372cced76', // rotary & button
 
-    //// Disconnect Service
+    // Disconnect Service
     //DISCONNECT: 'e23625a1-a6b6-4aa5-a1ad-b9c5d9158363',
 
-    //// Dataframe Service
+    // Dataframe Service
     //DATAFRAME: '4c574af1-72d7-45d2-a1bb-23cd0ec20c57',
 
     PROTOBUF_OUTPUT: 'f9d60371-5325-4c64-b874-a68c7c555bad',
@@ -154,18 +155,21 @@ class Watch extends EventTarget {
         const saneIntensity = Math.max(Math.min(intensity, 1.0), 0.0)
         const discretizedIntensity = Math.round(255 * saneIntensity)
 
-        this.gattServer.getPrimaryService(serviceUuids.FEEDBACK).then(service => {
-            service.getCharacteristic(characteristicUuids.HAPTICS).then(characteristic => {
-                const value = new ArrayBuffer(6)
-                const valueView = new DataView(value, 0, 6)
 
-                valueView.setUint8(0, 0)
-                valueView.setInt32(1, saneLength)
-                valueView.setUint8(5, discretizedIntensity)
+        this.gattServer.getPrimaryService(serviceUuids.PROTOBUF).then(service => {
+            service.getCharacteristic(characteristicUuids.PROTOBUF_INPUT).then(characteristic => {
 
-                characteristic.writeValueWithResponse(value)
+                const inputUpdate = InputUpdate.create(
+                    {hapticEvent: {type: 1, intensity: saneIntensity, length: saneLength}}
+                )
+
+                const data = InputUpdate.encode(inputUpdate).finish()
+                const dataView = new DataView(data.buffer.slice(0, data.length))
+
+                characteristic.writeValueWithResponse(dataView)
             })
         })
+
     }
 
     get device() { return this._device }
@@ -194,10 +198,6 @@ export const getWatch = async () => {
         ]},
     ]
     const optionalServices = [
-        serviceUuids.SENSOR,
-        serviceUuids.DATAFRAME,
-        serviceUuids.FEEDBACK,
-        serviceUuids.DISCONNECT,
         serviceUuids.PROTOBUF
     ]
 
