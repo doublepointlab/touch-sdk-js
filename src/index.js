@@ -148,6 +148,12 @@ class Watch extends EventTarget {
             this.dispatchEvent(new CustomEvent('orientationchanged', {detail: frame.quat}))
         }
 
+        for (const signal of message.signals) {
+            if (signal == 1) {
+                this.gattServer.disconnect()
+            }
+        }
+
     }
 
     triggerHaptics(intensity, length) {
