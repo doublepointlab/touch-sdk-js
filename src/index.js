@@ -1,5 +1,4 @@
-import { Update } from './watch_output.js'
-import { InputUpdate, HapticEvent } from './watch_input.js'
+import { Update, InputUpdate, HapticEvent } from './watch_protobuf.js'
 
 const serviceUuids = {
     INTERACTION: '008e74d0-7bb3-4ac5-8baf-e5e372cced76',
