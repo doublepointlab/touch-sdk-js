@@ -44,14 +44,14 @@ const bytesToFloatArray = bytes => {
 
 
 export class Watch extends EventTarget {
-    constructor(device) {
+    constructor() {
         super()
     }
 
     connect = async () => {
         if (!navigator.bluetooth) {
             let errorMessage
-            if (navigator.userAgent.indexOf("Chrome") != -1) {
+            if (navigator.userAgent.indexOf('Chrome') != -1) {
                 // Browser probably supports Web Bluetooth, but it is not enabled.
                 errorMessage = 'Web Bluetooth is disabled. Please enable it from chrome://flags'
             } else {
