@@ -30,8 +30,8 @@ class Watch extends EventTarget {
     }
 
     _subscribeToNotifications() {
-        this.gattServer.getPrimaryService(serviceUUID).then(service => {
-            service.getCharacteristic(characteristicUUID).then(characteristic => {
+        this.gattServer.getPrimaryService(serviceUuids.PROTOBUF).then(service => {
+            service.getCharacteristic(characteristicUuids.PROTOBUF_OUTPUT).then(characteristic => {
                 characteristic.addEventListener('characteristicvaluechanged', gattEvent => {
                     const dataView = gattEvent.target.value
                     const uints = new Uint8Array(dataView.buffer)
