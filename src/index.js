@@ -1,4 +1,5 @@
 import { Update, InputUpdate } from './watch_protobuf.js'
+import { UAParser } from 'ua-parser-js'
 
 const serviceUuids = {
     INTERACTION: '008e74d0-7bb3-4ac5-8baf-e5e372cced76',
@@ -57,6 +58,7 @@ export class Watch extends EventTarget {
     }
 
     _subscribeToNotifications() {
+        this._sendClientInfo()
         this.gattServer.getPrimaryService(serviceUuids.PROTOBUF).then(service => {
             service.getCharacteristic(characteristicUuids.PROTOBUF_OUTPUT).then(characteristic => {
                 characteristic.addEventListener('characteristicvaluechanged', gattEvent => {
@@ -116,6 +118,33 @@ export class Watch extends EventTarget {
                 this.gattServer.disconnect()
             }
         }
+
+    }
+
+    _sendClientInfo = () => {
+        this.gattServer.getPrimaryService(serviceUuids.PROTOBUF).then(service => {
+            service.getCharacteristic(characteristicUuids.PROTOBUF_INPUT).then(characteristic => {
+                const parser = new UAParser()
+                parser.setUA(navigator.userAgent)
+                const result = parser.getResult()
+                const browser = result.browser
+                console.log(window.location)
+
+                const inputUpdate = InputUpdate.create(
+                    {clientInfo: {
+                        appName: window.location.host,
+                        deviceName: `${browser.name} ${browser.version}`,
+                        title: "Title here",
+                        os: result.os.name
+                    }}
+                )
+
+                const data = InputUpdate.encode(inputUpdate).finish()
+                const dataView = new DataView(data.buffer.slice(0, data.length))
+
+                characteristic.writeValueWithResponse(dataView)
+            })
+        })
 
     }
 
