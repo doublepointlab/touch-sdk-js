@@ -56,7 +56,7 @@ export class Watch extends EventTarget {
         this.device.gatt.disconnect()
     }
 
-    _subscribeToNotifications() {
+    _subscribeToNotifications = () => {
         this.gattServer.getPrimaryService(serviceUuids.PROTOBUF).then(service => {
             service.getCharacteristic(characteristicUuids.PROTOBUF_OUTPUT).then(characteristic => {
                 characteristic.addEventListener('characteristicvaluechanged', gattEvent => {
@@ -115,7 +115,7 @@ export class Watch extends EventTarget {
 
     }
 
-    triggerHaptics(intensity, length) {
+    triggerHaptics = (intensity, length) => {
         const saneLength = Math.max(Math.min(length, 5000), 0)
         const saneIntensity = Math.max(Math.min(intensity, 1.0), 0.0)
 
