@@ -18,7 +18,7 @@ npm install touch-sdk
 Please note that `watch.requestConnection()` needs to happen as a result of a user action, for example a button click.
 
 ```javascript
-import { getWatch } from 'touch-sdk'
+import { Watch } from 'touch-sdk'
 
 const watch = new Watch()
 
