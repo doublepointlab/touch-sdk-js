@@ -9,7 +9,7 @@ npm install touch-sdk
 
 ## Example usage (incomplete)
 
-Please note that `watch.connect()` needs to happen as a result of a user action, for example a button click.
+Please note that `watch.requestConnection()` needs to happen as a result of a user action, for example a button click.
 
 ```javascript
 import { getWatch } from 'touch-sdk'
@@ -20,7 +20,7 @@ watch.addEventListener('tap', () => {
     console.log('tap')
 })
 
-watch.connect().then(() => {
+watch.requestConnection().then(() => {
     console.log('connected')
 }, error => {
     alert(error.message)
