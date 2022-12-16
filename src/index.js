@@ -19,7 +19,7 @@ export class Watch extends EventTarget {
     requestConnection = async () => {
         if (!navigator.bluetooth) {
             let errorMessage
-            if (navigator.userAgent.indexOf('Chrome') != -1) {
+            if (navigator.userAgent.indexOf('Chrome') !== -1) {
                 // Browser probably supports Web Bluetooth, but it is not enabled.
                 errorMessage = 'Web Bluetooth is disabled. Please enable it from chrome://flags'
             } else {
@@ -74,7 +74,7 @@ export class Watch extends EventTarget {
 
     dispatchProtobufEvents = (message) => {
         for (const gesture of message.gestures) {
-            if (gesture.type == 1) {
+            if (gesture.type === 1) {
                 this.dispatchEvent(new CustomEvent('tap'))
             }
         }
@@ -94,7 +94,7 @@ export class Watch extends EventTarget {
                 else return ''
             })()
 
-            if (eventName != '')
+            if (eventName !== '')
                 this.dispatchEvent(new CustomEvent(eventName, {detail: touchEvent.coords}))
         }
 
@@ -112,7 +112,7 @@ export class Watch extends EventTarget {
         }
 
         for (const signal of message.signals) {
-            if (signal == 1) {
+            if (signal === 1) {
                 this.gattServer.disconnect()
             }
         }
