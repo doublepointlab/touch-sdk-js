@@ -1,4 +1,4 @@
-import { Update, InputUpdate, HapticEvent } from './watch_protobuf.js'
+import { Update, InputUpdate } from './watch_protobuf.js'
 
 const serviceUuids = {
     INTERACTION: '008e74d0-7bb3-4ac5-8baf-e5e372cced76',
@@ -16,7 +16,7 @@ export class Watch extends EventTarget {
         super()
     }
 
-    connect = async () => {
+    requestConnection = async () => {
         if (!navigator.bluetooth) {
             let errorMessage
             if (navigator.userAgent.indexOf('Chrome') != -1) {
@@ -122,8 +122,6 @@ export class Watch extends EventTarget {
     triggerHaptics(intensity, length) {
         const saneLength = Math.max(Math.min(length, 5000), 0)
         const saneIntensity = Math.max(Math.min(intensity, 1.0), 0.0)
-        const discretizedIntensity = Math.round(255 * saneIntensity)
-
 
         this.gattServer.getPrimaryService(serviceUuids.PROTOBUF).then(service => {
             service.getCharacteristic(characteristicUuids.PROTOBUF_INPUT).then(characteristic => {
