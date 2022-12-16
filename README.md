@@ -32,3 +32,10 @@ watch.requestConnection().then(() => {
     alert(error.message)
 })
 ```
+
+### Ray casting (arm direction)
+```javascript
+watch.addEventListener('armdirectionchanged', event => {
+    console.log(event.detail)
+})
+```
