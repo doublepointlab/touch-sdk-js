@@ -43,21 +43,52 @@ const bytesToFloatArray = bytes => {
 
 
 
-class Watch extends EventTarget {
-    constructor(device) {
+export class Watch extends EventTarget {
+    constructor() {
         super()
-        this._device = device
+    }
 
-        this.device.addEventListener('gattserverdisconnected', () => {
-            const event = new CustomEvent('disconnected')
-            this.dispatchEvent(event)
-        })
+    connect = async () => {
+        if (!navigator.bluetooth) {
+            let errorMessage
+            if (navigator.userAgent.indexOf('Chrome') != -1) {
+                // Browser probably supports Web Bluetooth, but it is not enabled.
+                errorMessage = 'Web Bluetooth is disabled. Please enable it from chrome://flags'
+            } else {
+                errorMessage = 'Web Bluetooth is not available, and likely not supported' +
+                               ' on your browser. Please try a Chrome-based browser.'
+            }
+            return Promise.reject(new Error(errorMessage))
+        }
 
-        this.device.gatt.connect()
-        .then(gattServer => {
-            this._gattServer = gattServer
-            this._subscribeToNotifications()
+        const filters = [{ services: [serviceUuids.INTERACTION]}]
+        const optionalServices = [
+            serviceUuids.SENSOR,
+            serviceUuids.DATAFRAME,
+            serviceUuids.FEEDBACK,
+            serviceUuids.DISCONNECT
+        ]
+
+        return navigator.bluetooth.requestDevice({ filters, optionalServices })
+        .then(device => {
+            this._device = device
+
+            this.device.addEventListener('gattserverdisconnected', () => {
+                const event = new CustomEvent('disconnected')
+                this.dispatchEvent(event)
+            })
+
+            this.device.gatt.connect()
+            .then(gattServer => {
+                this._gattServer = gattServer
+                this._subscribeToNotifications()
+            })
+            return this
         })
+    }
+
+    disconnect = () => {
+        this.device.gatt.disconnect()
     }
 
     _subscribeToNotifications() {
@@ -179,35 +210,4 @@ class Watch extends EventTarget {
 
     get device() { return this._device }
     get gattServer() { return this._gattServer }
-}
-
-
-
-export const getWatch = async () => {
-    if (!navigator.bluetooth) {    
-        let errorMessage
-        if (navigator.userAgent.indexOf("Chrome") != -1) {
-            // Browser probably supports Web Bluetooth, but it is not enabled.
-            errorMessage = 'Web Bluetooth is disabled. Please enable it from chrome://flags'
-        } else {
-            errorMessage = 'Web Bluetooth is not available, and likely not supported' +
-                           ' on your browser. Please try a Chrome-based browser.'
-        }
-        return Promise.reject(new Error(errorMessage))
-    }
-
-    const filters = [
-        { services: [
-            serviceUuids.INTERACTION,
-        ]},
-    ]
-    const optionalServices = [
-        serviceUuids.SENSOR,
-        serviceUuids.DATAFRAME,
-        serviceUuids.FEEDBACK,
-        serviceUuids.DISCONNECT
-    ]
-
-    return navigator.bluetooth.requestDevice({ filters, optionalServices })
-    .then(device => new Watch(device))
 }
