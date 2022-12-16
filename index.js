@@ -48,7 +48,7 @@ export class Watch extends EventTarget {
         super()
     }
 
-    connect = async () => {
+    requestConnection = async () => {
         if (!navigator.bluetooth) {
             let errorMessage
             if (navigator.userAgent.indexOf('Chrome') != -1) {
