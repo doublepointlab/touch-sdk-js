@@ -100,14 +100,12 @@ export class Watch extends EventTarget {
             this.dispatchEvent(new CustomEvent('button', {detail: buttonEvent.id}))
         }
 
-        if (message.sensorFrames.length > 0) {
-            const frame = message.sensorFrames.slice(-1)[0]
-
+        message.sensorFrames.forEach(frame => {
             this.dispatchEvent(new CustomEvent('accelerationchanged', {detail: frame.acc}))
             this.dispatchEvent(new CustomEvent('gravityvectorchanged', {detail: frame.grav}))
             this.dispatchEvent(new CustomEvent('angularvelocitychanged', {detail: frame.gyro}))
             this.dispatchEvent(new CustomEvent('orientationchanged', {detail: frame.quat}))
-        }
+        })
 
         for (const signal of message.signals) {
             if (signal === 1) {
