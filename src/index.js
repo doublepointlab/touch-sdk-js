@@ -84,17 +84,15 @@ export class Watch extends EventTarget {
         }
 
         for (const touchEvent of message.touchEvents) {
-            const type = touchEvent.type
+            // if type is none of the known ones, eventName will be undefined
+            const eventName = ({
+                1: 'touchstart',
+                2: 'touchend',
+                3: 'touchmove',
+                4: 'touchcancel'
+            })[touchEvent.type]
 
-            const eventName = (() => {
-                if (type === 1) return 'touchstart'
-                if (type === 2) return 'touchend'
-                if (type === 3) return 'touchmove'
-                if (type === 4) return 'touchcancel'
-                else return ''
-            })()
-
-            if (eventName !== '')
+            if (eventName)
                 this.dispatchEvent(new CustomEvent(eventName, {detail: touchEvent.coords}))
         }
 
