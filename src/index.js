@@ -64,7 +64,7 @@ export class Watch extends EventTarget {
                     const uints = new Uint8Array(dataView.buffer)
                     const messageObject = Update.decode(uints)
 
-                    this.dispatchProtobufEvents(messageObject)
+                    this._dispatchProtobufEvents(messageObject)
 
                 })
                 characteristic.startNotifications()
@@ -72,7 +72,7 @@ export class Watch extends EventTarget {
         })
     }
 
-    dispatchProtobufEvents = (message) => {
+    _dispatchProtobufEvents = (message) => {
         for (const gesture of message.gestures) {
             if (gesture.type == 1) {
                 this.dispatchEvent(new CustomEvent('tap'))
