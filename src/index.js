@@ -19,7 +19,7 @@ export class Watch extends EventTarget {
     requestConnection = async () => {
         if (!navigator.bluetooth) {
             let errorMessage
-            if (navigator.userAgent.indexOf('Chrome') != -1) {
+            if (navigator.userAgent.indexOf('Chrome') !== -1) {
                 // Browser probably supports Web Bluetooth, but it is not enabled.
                 errorMessage = 'Web Bluetooth is disabled. Please enable it from chrome://flags'
             } else {
@@ -56,7 +56,7 @@ export class Watch extends EventTarget {
         this.device.gatt.disconnect()
     }
 
-    _subscribeToNotifications() {
+    _subscribeToNotifications = () => {
         this.gattServer.getPrimaryService(serviceUuids.PROTOBUF).then(service => {
             service.getCharacteristic(characteristicUuids.PROTOBUF_OUTPUT).then(characteristic => {
                 characteristic.addEventListener('characteristicvaluechanged', gattEvent => {
@@ -74,7 +74,7 @@ export class Watch extends EventTarget {
 
     dispatchProtobufEvents = (message) => {
         for (const gesture of message.gestures) {
-            if (gesture.type == 1) {
+            if (gesture.type === 1) {
                 this.dispatchEvent(new CustomEvent('tap'))
             }
         }
@@ -84,17 +84,15 @@ export class Watch extends EventTarget {
         }
 
         for (const touchEvent of message.touchEvents) {
-            const type = touchEvent.type
+            // if type is none of the known ones, eventName will be undefined
+            const eventName = ({
+                1: 'touchstart',
+                2: 'touchend',
+                3: 'touchmove',
+                4: 'touchcancel'
+            })[touchEvent.type]
 
-            const eventName = (() => {
-                if (type === 1) return 'touchstart'
-                if (type === 2) return 'touchend'
-                if (type === 3) return 'touchmove'
-                if (type === 4) return 'touchcancel'
-                else return ''
-            })()
-
-            if (eventName != '')
+            if (eventName)
                 this.dispatchEvent(new CustomEvent(eventName, {detail: touchEvent.coords}))
         }
 
@@ -102,9 +100,7 @@ export class Watch extends EventTarget {
             this.dispatchEvent(new CustomEvent('button', {detail: buttonEvent.id}))
         }
 
-        if (message.sensorFrames.length > 0) {
-            const frame = message.sensorFrames.slice(-1)[0]
-
+        for (const frame of message.sensorFrames) {
             this.dispatchEvent(new CustomEvent('accelerationchanged', {detail: frame.acc}))
             this.dispatchEvent(new CustomEvent('gravityvectorchanged', {detail: frame.grav}))
             this.dispatchEvent(new CustomEvent('angularvelocitychanged', {detail: frame.gyro}))
@@ -112,14 +108,14 @@ export class Watch extends EventTarget {
         }
 
         for (const signal of message.signals) {
-            if (signal == 1) {
+            if (signal === 1) {
                 this.gattServer.disconnect()
             }
         }
 
     }
 
-    triggerHaptics(intensity, length) {
+    triggerHaptics = (intensity, length) => {
         const saneLength = Math.max(Math.min(length, 5000), 0)
         const saneIntensity = Math.max(Math.min(intensity, 1.0), 0.0)
 
