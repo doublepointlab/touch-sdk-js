@@ -105,6 +105,7 @@ export class Watch extends EventTarget {
             this.dispatchEvent(new CustomEvent('gravityvectorchanged', {detail: frame.grav}))
             this.dispatchEvent(new CustomEvent('angularvelocitychanged', {detail: frame.gyro}))
             this.dispatchEvent(new CustomEvent('orientationchanged', {detail: frame.quat}))
+            this.dispatchRayCasting(frame)
         }
 
         for (const signal of message.signals) {
@@ -114,6 +115,43 @@ export class Watch extends EventTarget {
         }
 
     }
+
+    
+    dispatchRayCasting = (frame) => {
+        const scaling = 1
+        const acceleration = 0
+
+        const { x, y, z } = frame.grav
+        const r = Math.sqrt(x*x + y*y + z*z)
+        const gravityDirection = {
+            x: x/r,
+            y: y/r,
+            z: z/r
+        }
+        const vx = -frame.gyro.z // right = +
+        const vy = -frame.gyro.y // down = +
+
+        const vr = Math.sqrt(vx*vx + vy*vy)
+
+        const dx = scaling * vx * Math.pow(vr, acceleration)
+        const dy = scaling * vy * Math.pow(vr, acceleration)
+
+        const rayX = dx * gravityDirection.z + dy * gravityDirection.y
+        const rayY = dy * gravityDirection.z - dx * gravityDirection.y
+
+        this.dispatchEvent(new CustomEvent('armdirectionchanged', {detail: 
+            {
+                dx: rayX,
+                dy: rayY
+            }
+        }))
+
+        // raycasting delta
+        // ray angle speed
+        // wrist pointing direction
+        // raycast move
+    }
+
 
     triggerHaptics = (intensity, length) => {
         const saneLength = Math.max(Math.min(length, 5000), 0)
