@@ -39,3 +39,10 @@ watch.addEventListener('armdirectionchanged', event => {
     console.log(event.detail)
 })
 ```
+
+## Building a new version
+```
+npm install
+npm run build
+npm publish
+```
