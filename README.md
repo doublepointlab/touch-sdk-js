@@ -8,9 +8,23 @@
 
 Connects to Port 6 Touch SDK compatible Bluetooth devices – like [this WearOS app](https://play.google.com/store/apps/details?id=io.port6.watchbridge).
 
-## Installation
+## Importing (URL)
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/touch-sdk@0.4.2/dist/main.js"></script>
+```
+
+```javascript
+const Watch = TouchSDK.Watch
+```
+
+## Importing (NPM)
 ```sh
 npm install touch-sdk
+```
+
+```javascript
+import { Watch } from 'touch-sdk'
 ```
 
 ## Example usage (incomplete)
@@ -18,8 +32,6 @@ npm install touch-sdk
 Please note that `watch.requestConnection()` needs to happen as a result of a user action, for example a button click.
 
 ```javascript
-import { Watch } from 'touch-sdk'
-
 const watch = new Watch()
 
 watch.addEventListener('tap', () => {
@@ -40,7 +52,7 @@ watch.addEventListener('armdirectionchanged', event => {
 })
 ```
 
-## Building a new version
+## Developing: build a new version
 ```
 npm install
 npm run build
