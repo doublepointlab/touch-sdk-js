@@ -11,7 +11,7 @@ Connects to Port 6 Touch SDK compatible Bluetooth devices – like [this WearOS 
 ## Importing (URL)
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/touch-sdk@0.4.2/dist/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/touch-sdk@0.4.3/dist/main.js"></script>
 ```
 
 ```javascript
