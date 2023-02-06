@@ -1,6 +1,6 @@
 {
   "name": "touch-sdk",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Port 6 Touch SDK",
   "main": "src/index.js",
   "scripts": {
