@@ -1,13 +1,13 @@
 {
   "name": "touch-sdk",
-  "version": "0.4.0",
+  "version": "0.4.3",
   "description": "Port 6 Touch SDK",
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"No tests specified\"",
-    "build": "webpack --mode=production --define-process-env-node-env=production",
+    "build": "webpack --mode=production --node-env=production",
     "build:dev": "webpack --mode=development",
-    "build:prod": "webpack --mode=production --define-process-env-node-env=production",
+    "build:prod": "webpack --mode=production --node-env=production",
     "watch": "webpack --watch",
     "serve": "webpack serve"
   },
