@@ -1,4 +1,4 @@
-import { Update, InputUpdate } from './watch_protobuf.js'
+import { Update, InputUpdate, Info } from './watch_protobuf.js'
 import { UAParser } from 'ua-parser-js'
 
 const serviceUuids = {
@@ -12,15 +12,23 @@ const characteristicUuids = {
     PROTOBUF_INFO: 'f9d60373-5325-4c64-b874-a68c7c555bad'
 }
 
+const handedness = [
+    "none",
+    "right",
+    "left"
+]
+
 export class Watch extends EventTarget {
     constructor() {
         super()
+        this._accepted = false
+        this._hand = handedness[0]
     }
 
     requestConnection = async () => {
         if (!navigator.bluetooth) {
             let errorMessage
-            if (navigator.userAgent.indexOf('Chrome') != -1) {
+            if (navigator.userAgent.indexOf('Chrome') !== -1) {
                 // Browser probably supports Web Bluetooth, but it is not enabled.
                 errorMessage = 'Web Bluetooth is disabled. Please enable it from chrome://flags'
             } else {
@@ -47,6 +55,7 @@ export class Watch extends EventTarget {
             this.device.gatt.connect()
             .then(gattServer => {
                 this._gattServer = gattServer
+                this._sendClientInfo()
                 this._subscribeToNotifications()
             })
             return this
@@ -57,8 +66,7 @@ export class Watch extends EventTarget {
         this.device.gatt.disconnect()
     }
 
-    _subscribeToNotifications() {
-        this._sendClientInfo()
+    _subscribeToNotifications = () => {
         this.gattServer.getPrimaryService(serviceUuids.PROTOBUF).then(service => {
             service.getCharacteristic(characteristicUuids.PROTOBUF_OUTPUT).then(characteristic => {
                 characteristic.addEventListener('characteristicvaluechanged', gattEvent => {
@@ -76,7 +84,7 @@ export class Watch extends EventTarget {
 
     _dispatchProtobufEvents = (message) => {
         for (const gesture of message.gestures) {
-            if (gesture.type == 1) {
+            if (gesture.type === 1) {
                 this.dispatchEvent(new CustomEvent('tap'))
             }
         }
@@ -86,17 +94,15 @@ export class Watch extends EventTarget {
         }
 
         for (const touchEvent of message.touchEvents) {
-            const type = touchEvent.type
+            // if type is none of the known ones, eventName will be undefined
+            const eventName = ({
+                1: 'touchstart',
+                2: 'touchend',
+                3: 'touchmove',
+                4: 'touchcancel'
+            })[touchEvent.type]
 
-            const eventName = (() => {
-                if (type === 1) return 'touchstart'
-                if (type === 2) return 'touchend'
-                if (type === 3) return 'touchmove'
-                if (type === 4) return 'touchcancel'
-                else return ''
-            })()
-
-            if (eventName != '')
+            if (eventName)
                 this.dispatchEvent(new CustomEvent(eventName, {detail: touchEvent.coords}))
         }
 
@@ -104,19 +110,19 @@ export class Watch extends EventTarget {
             this.dispatchEvent(new CustomEvent('button', {detail: buttonEvent.id}))
         }
 
-        if (message.sensorFrames.length > 0) {
-            const frame = message.sensorFrames.slice(-1)[0]
-
+        for (const frame of message.sensorFrames) {
             this.dispatchEvent(new CustomEvent('accelerationchanged', {detail: frame.acc}))
             this.dispatchEvent(new CustomEvent('gravityvectorchanged', {detail: frame.grav}))
             this.dispatchEvent(new CustomEvent('angularvelocitychanged', {detail: frame.gyro}))
             this.dispatchEvent(new CustomEvent('orientationchanged', {detail: frame.quat}))
+            this.dispatchRayCasting(frame)
         }
 
-        for (const signal of message.signals) {
-            if (signal == 1) {
-                this.gattServer.disconnect()
-            }
+        if (message.signals.includes(1)) {
+            this.gattServer.disconnect()
+        } else if (!this._accepted) {
+            this._fetchInfo()
+            this._accepted = true
         }
 
     }
@@ -134,7 +140,6 @@ export class Watch extends EventTarget {
                     {clientInfo: {
                         appName: window.location.host,
                         deviceName: `${browser.name} ${browser.version}`,
-                        title: "Title here",
                         os: result.os.name
                     }}
                 )
@@ -148,7 +153,58 @@ export class Watch extends EventTarget {
 
     }
 
-    triggerHaptics(intensity, length) {
+
+    _fetchInfo = () => {
+        this.gattServer.getPrimaryService(serviceUuids.PROTOBUF).then(service => {
+            service.getCharacteristic(characteristicUuids.PROTOBUF_INFO).then(characteristic => {
+                characteristic.readValue().then(data => {
+                    const uints = new Uint8Array(data.buffer)
+                    const hand = Info.decode(uints).hand
+
+                    if (hand >= 0 && hand < handedness.length) {
+                        this._hand = handedness[hand]
+                    }
+                })
+            })
+        })
+    }
+
+    dispatchRayCasting = (frame) => {
+        const scaling = 1
+        const acceleration = 0
+
+        const { x, y, z } = frame.grav
+        const r = Math.sqrt(x*x + y*y + z*z)
+        const gravityDirection = {
+            x: x/r,
+            y: y/r,
+            z: z/r
+        }
+        const vx = -frame.gyro.z // right = +
+        const vy = -frame.gyro.y // down = +
+
+        const vr = Math.sqrt(vx*vx + vy*vy)
+
+        const dx = scaling * vx * Math.pow(vr, acceleration)
+        const dy = scaling * vy * Math.pow(vr, acceleration)
+
+        const rayX = dx * gravityDirection.z + dy * gravityDirection.y
+        const rayY = dy * gravityDirection.z - dx * gravityDirection.y
+
+        this.dispatchEvent(new CustomEvent('armdirectionchanged', {detail:
+            {
+                dx: rayX,
+                dy: rayY
+            }
+        }))
+
+        // raycasting delta
+        // ray angle speed
+        // wrist pointing direction
+        // raycast move
+    }
+
+    triggerHaptics = (intensity, length) => {
         const saneLength = Math.max(Math.min(length, 5000), 0)
         const saneIntensity = Math.max(Math.min(intensity, 1.0), 0.0)
 
@@ -170,4 +226,5 @@ export class Watch extends EventTarget {
 
     get device() { return this._device }
     get gattServer() { return this._gattServer }
+    get hand() { return this._hand }
 }
