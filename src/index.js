@@ -1,4 +1,4 @@
-import { Update, InputUpdate } from './watch_protobuf.js'
+import { Update, InputUpdate, Info } from './watch_protobuf.js'
 
 const serviceUuids = {
     INTERACTION: '008e74d0-7bb3-4ac5-8baf-e5e372cced76',
@@ -11,9 +11,17 @@ const characteristicUuids = {
     PROTOBUF_INFO: 'f9d60373-5325-4c64-b874-a68c7c555bad'
 }
 
+const handedness = [
+    "none",
+    "right",
+    "left"
+]
+
 export class Watch extends EventTarget {
     constructor() {
         super()
+        this._accepted = false
+        this._hand = handedness[0]
     }
 
     requestConnection = async () => {
@@ -108,15 +116,30 @@ export class Watch extends EventTarget {
             this.dispatchRayCasting(frame)
         }
 
-        for (const signal of message.signals) {
-            if (signal === 1) {
-                this.gattServer.disconnect()
-            }
+        if (message.signals.includes(1)) {
+            this.gattServer.disconnect()
+        } else if (!this._accepted) {
+            this._fetch_info()
+            this._accepted = true
         }
 
     }
 
-    
+    _fetch_info = () => {
+        this.gattServer.getPrimaryService(serviceUuids.PROTOBUF).then(service => {
+            service.getCharacteristic(characteristicUuids.PROTOBUF_INFO).then(characteristic => {
+                characteristic.readValue().then(data => {
+                    const uints = new Uint8Array(data.buffer)
+                    const hand = Info.decode(uints).hand
+
+                    if (hand >= 0 && hand < handedness.length) {
+                        this._hand = handedness[hand]
+                    }
+                })
+            })
+        })
+    }
+
     dispatchRayCasting = (frame) => {
         const scaling = 1
         const acceleration = 0
@@ -139,7 +162,7 @@ export class Watch extends EventTarget {
         const rayX = dx * gravityDirection.z + dy * gravityDirection.y
         const rayY = dy * gravityDirection.z - dx * gravityDirection.y
 
-        this.dispatchEvent(new CustomEvent('armdirectionchanged', {detail: 
+        this.dispatchEvent(new CustomEvent('armdirectionchanged', {detail:
             {
                 dx: rayX,
                 dy: rayY
@@ -175,4 +198,5 @@ export class Watch extends EventTarget {
 
     get device() { return this._device }
     get gattServer() { return this._gattServer }
+    get hand() { return this._hand }
 }
