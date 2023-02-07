@@ -16,6 +16,24 @@ export class Watch extends EventTarget {
         super()
     }
 
+    createConnectButton = () => {
+        const button = document.createElement('button')
+        button.innerText = 'Connect Touch SDK Controller'
+        button.classList.add('touch-sdk-connect-button')
+
+        button.addEventListener('click', () => this.requestConnection())
+
+        this.addEventListener('device-selected', () => {
+            button.style.display = 'none'
+        })
+
+        this.addEventListener('disconnected', () => {
+            button.style.display = 'inline-block' // default display style for a button
+        })
+
+        return button
+    }
+
     requestConnection = async () => {
         if (!navigator.bluetooth) {
             let errorMessage
@@ -45,6 +63,9 @@ export class Watch extends EventTarget {
 
             this.device.gatt.connect()
             .then(gattServer => {
+                // The watch receives a connection request, but might not accept it
+                const event = new CustomEvent('device-selected')
+                this.dispatchEvent(event)
                 this._gattServer = gattServer
                 this._subscribeToNotifications()
             })
@@ -116,7 +137,7 @@ export class Watch extends EventTarget {
 
     }
 
-    
+
     dispatchRayCasting = (frame) => {
         const scaling = 1
         const acceleration = 0
@@ -139,7 +160,7 @@ export class Watch extends EventTarget {
         const rayX = dx * gravityDirection.z + dy * gravityDirection.y
         const rayY = dy * gravityDirection.z - dx * gravityDirection.y
 
-        this.dispatchEvent(new CustomEvent('armdirectionchanged', {detail: 
+        this.dispatchEvent(new CustomEvent('armdirectionchanged', {detail:
             {
                 dx: rayX,
                 dy: rayY
