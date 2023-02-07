@@ -119,13 +119,13 @@ export class Watch extends EventTarget {
         if (message.signals.includes(1)) {
             this.gattServer.disconnect()
         } else if (!this._accepted) {
-            this._fetch_info()
+            this._fetchInfo()
             this._accepted = true
         }
 
     }
 
-    _fetch_info = () => {
+    _fetchInfo = () => {
         this.gattServer.getPrimaryService(serviceUuids.PROTOBUF).then(service => {
             service.getCharacteristic(characteristicUuids.PROTOBUF_INFO).then(characteristic => {
                 characteristic.readValue().then(data => {
