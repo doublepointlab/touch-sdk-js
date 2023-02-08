@@ -155,6 +155,9 @@ export class Watch extends EventTarget {
         const scaling = 1
         const acceleration = 0
 
+        // Assumes right hand if this.hand === 'none'
+        const handednessScale = this.hand === 'left' ? -1 : 1
+
         const { x, y, z } = frame.grav
         const r = Math.sqrt(x*x + y*y + z*z)
         const gravityDirection = {
@@ -171,7 +174,7 @@ export class Watch extends EventTarget {
         const dy = scaling * vy * Math.pow(vr, acceleration)
 
         const rayX = dx * gravityDirection.z + dy * gravityDirection.y
-        const rayY = dy * gravityDirection.z - dx * gravityDirection.y
+        const rayY = handednessScale * (dy * gravityDirection.z - dx * gravityDirection.y)
 
         this.dispatchEvent(new CustomEvent('armdirectionchanged', {detail:
             {
