@@ -24,6 +24,24 @@ export class Watch extends EventTarget {
         this._hand = handedness[0]
     }
 
+    createConnectButton = () => {
+        const button = document.createElement('button')
+        button.innerText = 'Connect Touch SDK Controller'
+        button.classList.add('touch-sdk-connect-button')
+
+        button.addEventListener('click', () => this.requestConnection())
+
+        this.addEventListener('device-selected', () => {
+            button.style.display = 'none'
+        })
+
+        this.addEventListener('disconnected', () => {
+            button.style.display = 'inline-block' // default display style for a button
+        })
+
+        return button
+    }
+
     requestConnection = async () => {
         if (!navigator.bluetooth) {
             let errorMessage
@@ -53,6 +71,9 @@ export class Watch extends EventTarget {
 
             this.device.gatt.connect()
             .then(gattServer => {
+                // The watch receives a connection request, but might not accept it
+                const event = new CustomEvent('device-selected')
+                this.dispatchEvent(event)
                 this._gattServer = gattServer
                 this._subscribeToNotifications()
             })
@@ -188,7 +209,6 @@ export class Watch extends EventTarget {
         // wrist pointing direction
         // raycast move
     }
-
 
     triggerHaptics = (intensity, length) => {
         const saneLength = Math.max(Math.min(length, 5000), 0)
