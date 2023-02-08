@@ -13,7 +13,7 @@ Works with Chrome-based browsers. ([more info](https://caniuse.com/?search=bluet
 ## Importing (URL)
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/touch-sdk@0.4.5/dist/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/touch-sdk@0.4.6/dist/main.js"></script>
 ```
 
 ```javascript
@@ -35,7 +35,7 @@ import { Watch } from 'touch-sdk'
 <!DOCTYPE html>
 <html>
     <head>
-        <script src="https://cdn.jsdelivr.net/npm/touch-sdk@0.4.5/dist/main.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/touch-sdk@0.4.6/dist/main.js"></script>
     </head>
     <body>
         <script>
