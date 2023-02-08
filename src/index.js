@@ -166,7 +166,6 @@ export class Watch extends EventTarget {
                 parser.setUA(navigator.userAgent)
                 const result = parser.getResult()
                 const browser = result.browser
-                console.log(window.location)
 
                 const inputUpdate = InputUpdate.create(
                     {clientInfo: {
