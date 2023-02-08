@@ -116,6 +116,17 @@ export class Watch extends EventTarget {
             this.dispatchRayCasting(frame)
         }
 
+        if (message.info) {
+            const handRaw = message.info.hand
+            if (handRaw > 0 && handRaw < handedness.length) {
+                const hand = handedness[handRaw]
+                this._hand = hand
+                this.dispatchEvent(
+                    new CustomEvent('handednesschanged', {detail: hand})
+                )
+            }
+        }
+
         if (message.signals.includes(1)) {
             this.gattServer.disconnect()
         } else if (!this._accepted) {
