@@ -25,6 +25,24 @@ export class Watch extends EventTarget {
         this._hand = handedness[0]
     }
 
+    createConnectButton = () => {
+        const button = document.createElement('button')
+        button.innerText = 'Connect Touch SDK Controller'
+        button.classList.add('touch-sdk-connect-button')
+
+        button.addEventListener('click', () => this.requestConnection())
+
+        this.addEventListener('device-selected', () => {
+            button.style.display = 'none'
+        })
+
+        this.addEventListener('disconnected', () => {
+            button.style.display = 'inline-block' // default display style for a button
+        })
+
+        return button
+    }
+
     requestConnection = async () => {
         if (!navigator.bluetooth) {
             let errorMessage
@@ -54,6 +72,9 @@ export class Watch extends EventTarget {
 
             this.device.gatt.connect()
             .then(gattServer => {
+                // The watch receives a connection request, but might not accept it
+                const event = new CustomEvent('device-selected')
+                this.dispatchEvent(event)
                 this._gattServer = gattServer
                 this._sendClientInfo()
                 this._subscribeToNotifications()
@@ -118,6 +139,17 @@ export class Watch extends EventTarget {
             this.dispatchRayCasting(frame)
         }
 
+        if (message.info) {
+            const handRaw = message.info.hand
+            if (handRaw > 0 && handRaw < handedness.length) {
+                const hand = handedness[handRaw]
+                this._hand = hand
+                this.dispatchEvent(
+                    new CustomEvent('handednesschanged', {detail: hand})
+                )
+            }
+        }
+
         if (message.signals.includes(1)) {
             this.gattServer.disconnect()
         } else if (!this._accepted) {
@@ -156,13 +188,13 @@ export class Watch extends EventTarget {
 
     _fetchInfo = () => {
         this.gattServer.getPrimaryService(serviceUuids.PROTOBUF).then(service => {
-            service.getCharacteristic(characteristicUuids.PROTOBUF_INFO).then(characteristic => {
+            service.getCharacteristic(characteristicUuids.PROTOBUF_OUTPUT).then(characteristic => {
                 characteristic.readValue().then(data => {
                     const uints = new Uint8Array(data.buffer)
-                    const hand = Info.decode(uints).hand
+                    const handRaw = Update.decode(uints).info.hand
 
-                    if (hand >= 0 && hand < handedness.length) {
-                        this._hand = handedness[hand]
+                    if (handRaw >= 0 && handRaw < handedness.length) {
+                        this._hand = handedness[handRaw]
                     }
                 })
             })
@@ -172,6 +204,9 @@ export class Watch extends EventTarget {
     dispatchRayCasting = (frame) => {
         const scaling = 1
         const acceleration = 0
+
+        // Assumes right hand if this.hand === 'none'
+        const handednessScale = this.hand === 'left' ? -1 : 1
 
         const { x, y, z } = frame.grav
         const r = Math.sqrt(x*x + y*y + z*z)
@@ -189,7 +224,7 @@ export class Watch extends EventTarget {
         const dy = scaling * vy * Math.pow(vr, acceleration)
 
         const rayX = dx * gravityDirection.z + dy * gravityDirection.y
-        const rayY = dy * gravityDirection.z - dx * gravityDirection.y
+        const rayY = handednessScale * (dy * gravityDirection.z - dx * gravityDirection.y)
 
         this.dispatchEvent(new CustomEvent('armdirectionchanged', {detail:
             {
