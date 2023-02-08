@@ -16,6 +16,249 @@
     // Exported root namespace
     var $root = $protobuf.roots["default"] || ($protobuf.roots["default"] = {});
     
+    $root.Info = (function() {
+    
+        /**
+         * Properties of an Info.
+         * @exports IInfo
+         * @interface IInfo
+         * @property {Info.Hand|null} [hand] Info hand
+         */
+    
+        /**
+         * Constructs a new Info.
+         * @exports Info
+         * @classdesc Represents an Info.
+         * @implements IInfo
+         * @constructor
+         * @param {IInfo=} [properties] Properties to set
+         */
+        function Info(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+    
+        /**
+         * Info hand.
+         * @member {Info.Hand} hand
+         * @memberof Info
+         * @instance
+         */
+        Info.prototype.hand = 0;
+    
+        /**
+         * Creates a new Info instance using the specified properties.
+         * @function create
+         * @memberof Info
+         * @static
+         * @param {IInfo=} [properties] Properties to set
+         * @returns {Info} Info instance
+         */
+        Info.create = function create(properties) {
+            return new Info(properties);
+        };
+    
+        /**
+         * Encodes the specified Info message. Does not implicitly {@link Info.verify|verify} messages.
+         * @function encode
+         * @memberof Info
+         * @static
+         * @param {IInfo} message Info message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Info.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.hand != null && Object.hasOwnProperty.call(message, "hand"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.hand);
+            return writer;
+        };
+    
+        /**
+         * Encodes the specified Info message, length delimited. Does not implicitly {@link Info.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof Info
+         * @static
+         * @param {IInfo} message Info message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Info.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+    
+        /**
+         * Decodes an Info message from the specified reader or buffer.
+         * @function decode
+         * @memberof Info
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {Info} Info
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Info.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.Info();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1: {
+                        message.hand = reader.int32();
+                        break;
+                    }
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+    
+        /**
+         * Decodes an Info message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof Info
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {Info} Info
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Info.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+    
+        /**
+         * Verifies an Info message.
+         * @function verify
+         * @memberof Info
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Info.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.hand != null && message.hasOwnProperty("hand"))
+                switch (message.hand) {
+                default:
+                    return "hand: enum value expected";
+                case 0:
+                case 1:
+                case 2:
+                    break;
+                }
+            return null;
+        };
+    
+        /**
+         * Creates an Info message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof Info
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {Info} Info
+         */
+        Info.fromObject = function fromObject(object) {
+            if (object instanceof $root.Info)
+                return object;
+            var message = new $root.Info();
+            switch (object.hand) {
+            default:
+                if (typeof object.hand === "number") {
+                    message.hand = object.hand;
+                    break;
+                }
+                break;
+            case "NONE":
+            case 0:
+                message.hand = 0;
+                break;
+            case "RIGHT":
+            case 1:
+                message.hand = 1;
+                break;
+            case "LEFT":
+            case 2:
+                message.hand = 2;
+                break;
+            }
+            return message;
+        };
+    
+        /**
+         * Creates a plain object from an Info message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof Info
+         * @static
+         * @param {Info} message Info
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        Info.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults)
+                object.hand = options.enums === String ? "NONE" : 0;
+            if (message.hand != null && message.hasOwnProperty("hand"))
+                object.hand = options.enums === String ? $root.Info.Hand[message.hand] === undefined ? message.hand : $root.Info.Hand[message.hand] : message.hand;
+            return object;
+        };
+    
+        /**
+         * Converts this Info to JSON.
+         * @function toJSON
+         * @memberof Info
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        Info.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+    
+        /**
+         * Gets the default type url for Info
+         * @function getTypeUrl
+         * @memberof Info
+         * @static
+         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns {string} The default type url
+         */
+        Info.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+            if (typeUrlPrefix === undefined) {
+                typeUrlPrefix = "type.googleapis.com";
+            }
+            return typeUrlPrefix + "/Info";
+        };
+    
+        /**
+         * Hand enum.
+         * @name Info.Hand
+         * @enum {number}
+         * @property {number} NONE=0 NONE value
+         * @property {number} RIGHT=1 RIGHT value
+         * @property {number} LEFT=2 LEFT value
+         */
+        Info.Hand = (function() {
+            var valuesById = {}, values = Object.create(valuesById);
+            values[valuesById[0] = "NONE"] = 0;
+            values[valuesById[1] = "RIGHT"] = 1;
+            values[valuesById[2] = "LEFT"] = 2;
+            return values;
+        })();
+    
+        return Info;
+    })();
+    
     $root.SensorFrame = (function() {
     
         /**
@@ -1464,6 +1707,7 @@
          * @property {Array.<Update.Signal>|null} [signals] Update signals
          * @property {number|null} [deltaTime] Update deltaTime
          * @property {number|Long|null} [unixTime] Update unixTime
+         * @property {IInfo|null} [info] Update info
          */
     
         /**
@@ -1552,6 +1796,14 @@
         Update.prototype.unixTime = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
     
         /**
+         * Update info.
+         * @member {IInfo|null|undefined} info
+         * @memberof Update
+         * @instance
+         */
+        Update.prototype.info = null;
+    
+        /**
          * Creates a new Update instance using the specified properties.
          * @function create
          * @memberof Update
@@ -1600,6 +1852,8 @@
                 writer.uint32(/* id 7, wireType 0 =*/56).int32(message.deltaTime);
             if (message.unixTime != null && Object.hasOwnProperty.call(message, "unixTime"))
                 writer.uint32(/* id 8, wireType 0 =*/64).int64(message.unixTime);
+            if (message.info != null && Object.hasOwnProperty.call(message, "info"))
+                $root.Info.encode(message.info, writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
             return writer;
         };
     
@@ -1681,6 +1935,10 @@
                     }
                 case 8: {
                         message.unixTime = reader.int64();
+                        break;
+                    }
+                case 9: {
+                        message.info = $root.Info.decode(reader, reader.uint32());
                         break;
                     }
                 default:
@@ -1783,6 +2041,11 @@
             if (message.unixTime != null && message.hasOwnProperty("unixTime"))
                 if (!$util.isInteger(message.unixTime) && !(message.unixTime && $util.isInteger(message.unixTime.low) && $util.isInteger(message.unixTime.high)))
                     return "unixTime: integer|Long expected";
+            if (message.info != null && message.hasOwnProperty("info")) {
+                var error = $root.Info.verify(message.info);
+                if (error)
+                    return "info." + error;
+            }
             return null;
         };
     
@@ -1888,6 +2151,11 @@
                     message.unixTime = object.unixTime;
                 else if (typeof object.unixTime === "object")
                     message.unixTime = new $util.LongBits(object.unixTime.low >>> 0, object.unixTime.high >>> 0).toNumber();
+            if (object.info != null) {
+                if (typeof object.info !== "object")
+                    throw TypeError(".Update.info: object expected");
+                message.info = $root.Info.fromObject(object.info);
+            }
             return message;
         };
     
@@ -1919,6 +2187,7 @@
                     object.unixTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.unixTime = options.longs === String ? "0" : 0;
+                object.info = null;
             }
             if (message.sensorFrames && message.sensorFrames.length) {
                 object.sensorFrames = [];
@@ -1957,6 +2226,8 @@
                     object.unixTime = options.longs === String ? String(message.unixTime) : message.unixTime;
                 else
                     object.unixTime = options.longs === String ? $util.Long.prototype.toString.call(message.unixTime) : options.longs === Number ? new $util.LongBits(message.unixTime.low >>> 0, message.unixTime.high >>> 0).toNumber() : message.unixTime;
+            if (message.info != null && message.hasOwnProperty("info"))
+                object.info = $root.Info.toObject(message.info, options);
             return object;
         };
     
@@ -3548,249 +3819,6 @@
         };
     
         return InputUpdate;
-    })();
-    
-    $root.Info = (function() {
-    
-        /**
-         * Properties of an Info.
-         * @exports IInfo
-         * @interface IInfo
-         * @property {Info.Hand|null} [hand] Info hand
-         */
-    
-        /**
-         * Constructs a new Info.
-         * @exports Info
-         * @classdesc Represents an Info.
-         * @implements IInfo
-         * @constructor
-         * @param {IInfo=} [properties] Properties to set
-         */
-        function Info(properties) {
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-    
-        /**
-         * Info hand.
-         * @member {Info.Hand} hand
-         * @memberof Info
-         * @instance
-         */
-        Info.prototype.hand = 0;
-    
-        /**
-         * Creates a new Info instance using the specified properties.
-         * @function create
-         * @memberof Info
-         * @static
-         * @param {IInfo=} [properties] Properties to set
-         * @returns {Info} Info instance
-         */
-        Info.create = function create(properties) {
-            return new Info(properties);
-        };
-    
-        /**
-         * Encodes the specified Info message. Does not implicitly {@link Info.verify|verify} messages.
-         * @function encode
-         * @memberof Info
-         * @static
-         * @param {IInfo} message Info message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        Info.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.hand != null && Object.hasOwnProperty.call(message, "hand"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.hand);
-            return writer;
-        };
-    
-        /**
-         * Encodes the specified Info message, length delimited. Does not implicitly {@link Info.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof Info
-         * @static
-         * @param {IInfo} message Info message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        Info.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-    
-        /**
-         * Decodes an Info message from the specified reader or buffer.
-         * @function decode
-         * @memberof Info
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {Info} Info
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        Info.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.Info();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1: {
-                        message.hand = reader.int32();
-                        break;
-                    }
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-    
-        /**
-         * Decodes an Info message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof Info
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {Info} Info
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        Info.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-    
-        /**
-         * Verifies an Info message.
-         * @function verify
-         * @memberof Info
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        Info.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.hand != null && message.hasOwnProperty("hand"))
-                switch (message.hand) {
-                default:
-                    return "hand: enum value expected";
-                case 0:
-                case 1:
-                case 2:
-                    break;
-                }
-            return null;
-        };
-    
-        /**
-         * Creates an Info message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof Info
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {Info} Info
-         */
-        Info.fromObject = function fromObject(object) {
-            if (object instanceof $root.Info)
-                return object;
-            var message = new $root.Info();
-            switch (object.hand) {
-            default:
-                if (typeof object.hand === "number") {
-                    message.hand = object.hand;
-                    break;
-                }
-                break;
-            case "NONE":
-            case 0:
-                message.hand = 0;
-                break;
-            case "RIGHT":
-            case 1:
-                message.hand = 1;
-                break;
-            case "LEFT":
-            case 2:
-                message.hand = 2;
-                break;
-            }
-            return message;
-        };
-    
-        /**
-         * Creates a plain object from an Info message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof Info
-         * @static
-         * @param {Info} message Info
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        Info.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.defaults)
-                object.hand = options.enums === String ? "NONE" : 0;
-            if (message.hand != null && message.hasOwnProperty("hand"))
-                object.hand = options.enums === String ? $root.Info.Hand[message.hand] === undefined ? message.hand : $root.Info.Hand[message.hand] : message.hand;
-            return object;
-        };
-    
-        /**
-         * Converts this Info to JSON.
-         * @function toJSON
-         * @memberof Info
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        Info.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-    
-        /**
-         * Gets the default type url for Info
-         * @function getTypeUrl
-         * @memberof Info
-         * @static
-         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-         * @returns {string} The default type url
-         */
-        Info.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
-            if (typeUrlPrefix === undefined) {
-                typeUrlPrefix = "type.googleapis.com";
-            }
-            return typeUrlPrefix + "/Info";
-        };
-    
-        /**
-         * Hand enum.
-         * @name Info.Hand
-         * @enum {number}
-         * @property {number} NONE=0 NONE value
-         * @property {number} RIGHT=1 RIGHT value
-         * @property {number} LEFT=2 LEFT value
-         */
-        Info.Hand = (function() {
-            var valuesById = {}, values = Object.create(valuesById);
-            values[valuesById[0] = "NONE"] = 0;
-            values[valuesById[1] = "RIGHT"] = 1;
-            values[valuesById[2] = "LEFT"] = 2;
-            return values;
-        })();
-    
-        return Info;
     })();
 
     return $root;

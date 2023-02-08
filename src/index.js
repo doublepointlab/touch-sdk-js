@@ -127,13 +127,13 @@ export class Watch extends EventTarget {
 
     _fetchInfo = () => {
         this.gattServer.getPrimaryService(serviceUuids.PROTOBUF).then(service => {
-            service.getCharacteristic(characteristicUuids.PROTOBUF_INFO).then(characteristic => {
+            service.getCharacteristic(characteristicUuids.PROTOBUF_OUTPUT).then(characteristic => {
                 characteristic.readValue().then(data => {
                     const uints = new Uint8Array(data.buffer)
-                    const hand = Info.decode(uints).hand
+                    const handRaw = Update.decode(uints).info.hand
 
-                    if (hand >= 0 && hand < handedness.length) {
-                        this._hand = handedness[hand]
+                    if (handRaw >= 0 && handRaw < handedness.length) {
+                        this._hand = handedness[handRaw]
                     }
                 })
             })
