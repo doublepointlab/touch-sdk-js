@@ -1,6 +1,6 @@
 {
   "name": "touch-sdk",
-  "version": "0.4.6",
+  "version": "0.5.0",
   "description": "Port 6 Touch SDK",
   "main": "src/index.js",
   "scripts": {
@@ -26,6 +26,7 @@
     "webpack-cli": "^5.0.0"
   },
   "dependencies": {
-    "protobufjs": "^7.1.2"
+    "protobufjs": "^7.1.2",
+    "ua-parser-js": "^1.0.32"
   }
 }

@@ -1,4 +1,5 @@
 import { Update, InputUpdate, Info } from './watch_protobuf.js'
+import { UAParser } from 'ua-parser-js'
 
 const serviceUuids = {
     INTERACTION: '008e74d0-7bb3-4ac5-8baf-e5e372cced76',
@@ -75,6 +76,7 @@ export class Watch extends EventTarget {
                 const event = new CustomEvent('device-selected')
                 this.dispatchEvent(event)
                 this._gattServer = gattServer
+                this._sendClientInfo()
                 this._subscribeToNotifications()
             })
             return this
@@ -93,7 +95,7 @@ export class Watch extends EventTarget {
                     const uints = new Uint8Array(dataView.buffer)
                     const messageObject = Update.decode(uints)
 
-                    this.dispatchProtobufEvents(messageObject)
+                    this._dispatchProtobufEvents(messageObject)
 
                 })
                 characteristic.startNotifications()
@@ -101,7 +103,7 @@ export class Watch extends EventTarget {
         })
     }
 
-    dispatchProtobufEvents = (message) => {
+    _dispatchProtobufEvents = (message) => {
         for (const gesture of message.gestures) {
             if (gesture.type === 1) {
                 this.dispatchEvent(new CustomEvent('tap'))
@@ -156,6 +158,33 @@ export class Watch extends EventTarget {
         }
 
     }
+
+    _sendClientInfo = () => {
+        this.gattServer.getPrimaryService(serviceUuids.PROTOBUF).then(service => {
+            service.getCharacteristic(characteristicUuids.PROTOBUF_INPUT).then(characteristic => {
+                const parser = new UAParser()
+                parser.setUA(navigator.userAgent)
+                const result = parser.getResult()
+                const browser = result.browser
+
+                const inputUpdate = InputUpdate.create(
+                    {clientInfo: {
+                        // file:// URLs don't have a window.location.host, use filename instead
+                        appName: window.location.host || window.location.pathname.split('/').pop(),
+                        deviceName: `${browser.name}`,
+                        os: result.os.name
+                    }}
+                )
+
+                const data = InputUpdate.encode(inputUpdate).finish()
+                const dataView = new DataView(data.buffer.slice(0, data.length))
+
+                characteristic.writeValueWithResponse(dataView)
+            })
+        })
+
+    }
+
 
     _fetchInfo = () => {
         this.gattServer.getPrimaryService(serviceUuids.PROTOBUF).then(service => {
