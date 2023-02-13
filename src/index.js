@@ -170,7 +170,7 @@ export class Watch extends EventTarget {
                 const inputUpdate = InputUpdate.create(
                     {clientInfo: {
                         appName: window.location.host,
-                        deviceName: `${browser.name} ${browser.version}`,
+                        deviceName: `${browser.name}`,
                         os: result.os.name
                     }}
                 )
