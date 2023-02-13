@@ -169,6 +169,7 @@ export class Watch extends EventTarget {
 
                 const inputUpdate = InputUpdate.create(
                     {clientInfo: {
+                        // file:// URLs don't have a window.location.host, use filename instead
                         appName: window.location.host || window.location.pathname.split('/').pop(),
                         deviceName: `${browser.name}`,
                         os: result.os.name
